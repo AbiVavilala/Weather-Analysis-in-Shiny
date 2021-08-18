@@ -14,11 +14,17 @@ library(ggthemes)
 library(shinythemes)
 library(lubridate)
 library(bslib)
-weather <- read.csv("c:/Users/60132690/Documents/weatherAUS.csv")
+urlfile <- "https://raw.githubusercontent.com/AbiVavilala/Weather-Analysis-in-Shiny/main/weatherAUS.csv"
+
+weather <- read.csv(url(urlfile))
 weather$Date <- as.Date(weather$Date)
 weather$year <- year(weather$Date)
 weather$month <- months(weather$Date)
 weather$month <- factor(weather$month, levels = month.name)
+weather$WindGustDir <- NULL
+weather$WindDir9am <- NULL
+weather$WindDir3pm <- NULL
+Location <- unique(weather$Location)
 weather$temp_interval <- cut(weather$MaxTemp, breaks = seq(0,50, by = 3))
 sydney_weather <- weather %>% filter(Location == "Sydney")
  
@@ -43,10 +49,10 @@ ui <- fluidPage(
                      br(),
                      
                      
-                    tags$h4("Aim of this application is to tell people Temperature is rising on Earth and Australia is not averse to this trend. General public in Australia are not that concerned about Climate Change and half the population think this will not impact them in their life time.",style="text-align:justify;color:black;background-color:lavender;padding:15px;border-radius:10px", width = 8),
+                    tags$h4("Aim of this application is to show people Temperature is rising on Earth and it will affect societies and ecosystem. Some regional changes in Australian rainfall have been linked to humaninduced climate change. Southwest Western Australia has experienced a reduction in rainfall since 1970s and this has been attributed to change in surface temperature. I will use the recorded temperature in Australia and will show you how Australia is getting hot every year. Please see the recorded Temperature in Australia and make your mind about climate change.",style="text-align:justify;color:black;background-color:lavender;padding:15px;border-radius:10px", width = 8),
                     
                       br(),
-                     tags$h4("This app will analyse about 10 years of daily weather observations from many locations across Australia.",br(strong("Source & Acnowledgements: ")),  "Observations were drawn from 52 Weather stations from across Australia by Australian Government Bureau of Meteorology.", br(), "I would like to thank Joe Young for wranling data and making it available for public to download from Kaggle",style="text-align:justify;color:black;background-color:papayawhip;padding:15px;border-radius:10px"),width=8,),
+                     tags$h4("This app will analyse about 10 years of daily weather observations from many locations across Australia.",br(strong("Source & Acnowledgements: ")),  "Observations were drawn from 52 Weather stations from across Australia by Australian Government Bureau of Meteorology.", br(), "I would like to thank Joe Young for wranling data and making it available for public to download from Kaggle.",style="text-align:justify;color:black;background-color:papayawhip;padding:15px;border-radius:10px"),width=8,),
                      column(tags$img(src = "download1.jpg", width = 200, height = 200), 
                          
                      
@@ -97,7 +103,7 @@ ui <- fluidPage(
               fluidRow(
              column(
             
-                 selectInput("Location", "Select a Location:", unique(weather$Location)), 
+                 selectInput("Location", "Select a Location:", choices = Location , selected = Location[11]), 
                  actionButton(inputId = "clicks", label = "Run"), width = 8))),
             hr(),
             br(),
@@ -121,7 +127,7 @@ ui <- fluidPage(
              ),
             fluidRow( 
                 column(
-             selectInput("Location1", "Select a Location: ", unique(weather$Location)),
+             selectInput("Location1", "Select a Location: ", choices = Location, selected = Location[11]),
              actionButton(inputId = "tabtwo_click", label = "Run"), width =8))),
             hr(),
             br(),
