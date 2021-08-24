@@ -14,6 +14,7 @@ library(ggthemes)
 library(shinythemes)
 library(lubridate)
 library(bslib)
+library(plotly)
 urlfile <- "https://raw.githubusercontent.com/AbiVavilala/Weather-Analysis-in-Shiny/main/weatherAUS.csv"
 
 weather <- read.csv(url(urlfile))
@@ -108,7 +109,7 @@ ui <- fluidPage(
             hr(),
             br(),
              fluidRow(
-            plotOutput("point"),
+            plotlyOutput("point"),
             verbatimTextOutput("maxtemp"))),
     tabPanel(title = "Recorded temperature during days", 
              
@@ -153,7 +154,7 @@ ui <- fluidPage(
              actionButton(inputId = "tabthree_click", label = "Run"), width =8))),
              hr(),
              br(),
-             plotOutput("point2"),
+             plotlyOutput("point2"),
              tags$h2(verbatimTextOutput("sum"))
     
     
@@ -183,16 +184,17 @@ server <- function(input, output){
         weather %>% filter(Location == input$Location2 & year == input$Year)
         
     })
-    output$point <- renderPlot({
+    output$point <- renderPlotly({
         
-        ggplot(data = tabone_data(), aes(MaxTemp, MinTemp)) + geom_point() + ggtitle(" recorded Temperature in between 2007 and 2017") + theme_economist()
+        p <- ggplot(data = tabone_data(), aes(MaxTemp, MinTemp)) + geom_point() + ggtitle(" recorded Temperature in between 2007 and 2017") + theme_economist()
+        ggplotly(p)
     })
     output$point1 <- renderPlot({
         
         ggplot(data = tabtwo_data(), aes(temp_interval, fill = temp_interval)) + geom_bar() + geom_text(stat='count', aes(label=..count..), vjust=-1) + ggtitle("Number of Days recorded Temperature") + xlab("Temperature Interval ") + ylab("Number of days")
         
     })
-    output$point2 <- renderPlot({
+    output$point2 <- renderPlotly({
         
         ggplot(data = data(), aes(MaxTemp, MinTemp)) + geom_point() 
         
